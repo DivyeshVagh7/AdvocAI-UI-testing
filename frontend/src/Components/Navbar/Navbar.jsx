@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
 import { User, LogOut, Menu, X } from "lucide-react";
-import { useAuth } from '../../context/AuthContext'; // Import useAuth
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth(); // Use AuthContext
+  const { user, isAuthenticated, logout } = useAuth();
+
+  // Prevent background scroll when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [isMenuOpen]);
 
   const navLinks = [
     { to: "/", label: "Home" },
@@ -20,42 +29,50 @@ export default function Navbar() {
     navLinks.push({ to: "/chat", label: "Messages", requiresAuth: true });
   }
 
-  if (isAuthenticated && user?.role === 'lawyer') {
+  if (isAuthenticated && user?.role === "lawyer") {
     navLinks.push({ to: "/lawyer-dashboard", label: "Lawyer Dashboard", requiresAuth: true });
   }
 
   return (
-    <nav className="bg-background/80 backdrop-blur-md sticky top-0 z-50 border-b py-4 border-border shadow-lg shadow-black/20 h-[var(--navbar-height)]">
+    <nav className="bg-background/80 backdrop-blur-md sticky top-0 z-50 border-b py-4 border-border shadow-lg shadow-black/20">
       <div className="container mx-auto px-5 h-full">
         <div className="flex items-center justify-between h-17">
-          <Link to="/" className="text-3xl font-extrabold text-white hover:text-primary transition-colors duration-200 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+          <Link
+            to="/"
+            className="text-3xl font-extrabold hover:text-primary transition-colors duration-200 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent"
+          >
             AdvocAI
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-2">
-            {navLinks.map((link, index) => (
-              ((!link.requiresAuth) || isAuthenticated) && (
-                <Link
-                  to={link.to}
-                  key={index}
-                  className="text-muted-foreground hover:text-foreground px-4 py-2 rounded-lg hover:bg-foreground/5 transition-all duration-200 relative group"
-                >
-                  {link.label}
-                  <span className="absolute bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
-                </Link>
-              )
-            ))}
+            {navLinks.map(
+              (link, index) =>
+                ((!link.requiresAuth || isAuthenticated) && (
+                  <Link
+                    to={link.to}
+                    key={index}
+                    className="text-muted-foreground hover:text-foreground px-4 py-2 rounded-lg hover:bg-foreground/5 transition-all duration-200 relative group"
+                  >
+                    {link.label}
+                    <span className="absolute bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
+                  </Link>
+                ))
+            )}
           </div>
 
-          {/* Desktop Auth Section */}
+          {/* Desktop Auth */}
           <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
               <>
                 <Link to="/profile">
                   <Button variant="ghost" className="hover:bg-foreground/5 rounded-full">
-                    {user && user.profile_picture ? (
-                      <img src={user.profile_picture} alt="Profile" className="w-9 h-8 rounded-full border-2 border-primary/50 hover:border-primary transition-colors" />
+                    {user?.profile_picture ? (
+                      <img
+                        src={user.profile_picture}
+                        alt="Profile"
+                        className="w-9 h-8 rounded-full border-2 border-primary/50 hover:border-primary transition-colors"
+                      />
                     ) : (
                       <div className="w-9 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
                         <User size={17} className="text-primary" />
@@ -63,6 +80,7 @@ export default function Navbar() {
                     )}
                   </Button>
                 </Link>
+
                 <Button
                   onClick={logout}
                   variant="outline"
@@ -75,7 +93,7 @@ export default function Navbar() {
               </>
             ) : (
               <Link to="/login">
-                <Button className="bg-gradient-to-r from-primary to-secondary hover:from-primary hover:to-secondary text-white shadow-md shadow-primary/30 hover:shadow-lg shadow-primary/40 transition-all duration-200">
+                <Button className="bg-gradient-to-r from-primary to-secondary text-white shadow-md hover:shadow-lg transition-all duration-200">
                   Login
                 </Button>
               </Link>
@@ -85,9 +103,8 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={() => setIsMenuOpen(true)}
               className="p-3 rounded-lg hover:bg-foreground/10 transition-colors duration-200 text-muted-foreground hover:text-foreground"
-              aria-label="Toggle menu"
             >
               <Menu size={23} />
             </button>
@@ -95,56 +112,71 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
-      <div
-        data-testid="mobile-menu"
-        className={`md:hidden fixed top-0 right-0 bottom-0 w-3/4 max-w-sm bg-background/95 backdrop-blur-xl z-40 flex flex-col py-5 px-6 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
-      >
-        <button
+      {/* DARK OVERLAY BEHIND MENU */}
+      {isMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
           onClick={() => setIsMenuOpen(false)}
-          className="absolute top-5 right-5 p-3 rounded-lg hover:bg-foreground/10 transition-colors duration-200 text-foreground"
-          aria-label="Close menu"
-        >
-          <X size={24} />
-        </button>
-        <div className="flex flex-col items-start space-y-6 mt-16"> {/* Adjusted for better spacing */}
-          {navLinks.map((link, index) => (
-            ((!link.requiresAuth) || isAuthenticated) && (
-              <Link
-                to={link.to}
-                key={index}
-                className="text-2xl font-bold text-foreground hover:text-primary transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            )
-          ))}
-          {isAuthenticated ? (
-            <>
-              <Link to="/profile" className="text-2xl font-bold text-foreground hover:text-primary transition-colors duration-200" onClick={() => setIsMenuOpen(false)}>
-                Profile
-              </Link>
-              <Button
-                onClick={() => { logout(); setIsMenuOpen(false); }}
-                variant="outline"
-                size="lg"
-                className="border-border hover:border-destructive hover:bg-destructive/10 hover:text-destructive transition-all duration-200 text-2xl font-bold w-full justify-start" // Added w-full justify-start
-              >
-                <LogOut size={20} className="mr-3" />
-                Logout
-              </Button>
-            </>
-          ) : (
-            <Link to="/login" className="text-2xl font-bold text-foreground hover:text-primary transition-colors duration-200 w-full" onClick={() => setIsMenuOpen(false)}>
-              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:from-primary hover:to-secondary text-white shadow-md shadow-primary/30 hover:shadow-lg shadow-primary/40 transition-all duration-200 text-2xl font-bold w-full justify-start"> {/* Added w-full justify-start */}
-                Login
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
+        ></div>
+      )}
+
+      {/* Mobile Menu */}
+      {/* Dark Overlay (click to close) */}
+{isMenuOpen && (
+  <div
+    className="fixed inset-0 bg-black/70 z-40 md:hidden"
+    onClick={() => setIsMenuOpen(false)}
+  ></div>
+)}
+
+{/* Fullscreen Mobile Menu */}
+<div
+  className={`md:hidden fixed inset-0 bg-background z-[60] flex flex-col py-6 px-6 transform transition-transform duration-300 ease-in-out 
+  ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+>
+  <button
+    onClick={() => setIsMenuOpen(false)}
+    className="absolute top-6 right-6 p-3 rounded-lg hover:bg-foreground/10 transition-colors"
+  >
+    <X size={26} />
+  </button>
+
+  <div className="mt-20 flex flex-col space-y-6">
+    {navLinks.map(
+      (link, index) =>
+        ((!link.requiresAuth || isAuthenticated) && (
+          <Link
+            key={index}
+            to={link.to}
+            onClick={() => setIsMenuOpen(false)}
+            className="text-3xl font-bold text-foreground hover:text-primary transition-all"
+          >
+            {link.label}
+          </Link>
+        ))
+    )}
+
+    {isAuthenticated ? (
+      <Button
+        onClick={() => {
+          logout();
+          setIsMenuOpen(false);
+        }}
+        variant="outline"
+        size="lg"
+        className="text-2xl mt-6 w-full"
+      >
+        Logout
+      </Button>
+    ) : (
+      <Link to="/login" className="w-full" onClick={() => setIsMenuOpen(false)}>
+        <Button size="lg" className="w-full text-2xl font-bold">
+          Login
+        </Button>
+      </Link>
+    )}
+  </div>
+</div>
     </nav>
   );
-}
+} 
