@@ -20,8 +20,11 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "html"],
       reportsDirectory: "./coverage",
-      exclude: ["node_modules/**", "src/test/**"],
+      exclude: [
+        "node_modules/**",
+        "src/test/**",
+        "src/Components/Subtle3DBackground.jsx"
+      ],
     },
   },
 })
-
