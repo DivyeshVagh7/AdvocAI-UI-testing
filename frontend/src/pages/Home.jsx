@@ -165,21 +165,19 @@ export default function Home() {
                     <div className="flex border-b border-primary/10">
                       <button
                         onClick={() => setActiveDemo("analyzer")}
-                        className={`flex-1 px-6 py-3 text-sm font-bold transition-all ${
-                          activeDemo === "analyzer"
-                            ? "bg-gradient-to-r from-primary to-secondary text-white"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
+                        className={`flex-1 px-6 py-3 text-sm font-bold transition-all ${activeDemo === "analyzer"
+                          ? "bg-gradient-to-r from-primary to-secondary text-white"
+                          : "text-muted-foreground hover:text-foreground"
+                          }`}
                       >
                         Document Analysis
                       </button>
                       <button
                         onClick={() => setActiveDemo("creator")}
-                        className={`flex-1 px-6 py-3 text-sm font-bold transition-all ${
-                          activeDemo === "creator"
-                            ? "bg-gradient-to-r from-primary to-secondary text-white"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
+                        className={`flex-1 px-6 py-3 text-sm font-bold transition-all ${activeDemo === "creator"
+                          ? "bg-gradient-to-r from-primary to-secondary text-white"
+                          : "text-muted-foreground hover:text-foreground"
+                          }`}
                       >
                         Document Generator
                       </button>
@@ -350,7 +348,7 @@ export default function Home() {
                     <span className="text-white text-sm font-bold">✓</span>
                   </div>
                   <span className="text-muted-foreground">Download, edit, or regenerate instantly</span>
-                  </li>
+                </li>
               </ul>
             </div>
             <div
@@ -647,13 +645,13 @@ export default function Home() {
           <div className="w-full px-4 sm:px-6 lg:px-8 py-12 relative z-10">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div className="flex items-center gap-3">
-                  <img src="/advoc-ai-logo.png" alt="Advoc AI" className="h-8" />
+                <img src="/advoc-ai-logo.png" alt="Advoc AI" className="h-8" />
                 <div>
                   <span className="text-white font-black text-sm block">Advoc AI</span>
                   <p className="text-xs text-muted-foreground">
-                  Master legal documents with AI-powered analysis, generation, and secure e-signatures.
-                </p>
-              </div>
+                    Master legal documents with AI-powered analysis, generation, and secure e-signatures.
+                  </p>
+                </div>
               </div>
               <p className="text-xs text-muted-foreground text-center md:text-right">
                 &copy; 2025 Advoc AI. Built with AI for legal professionals.
@@ -672,6 +670,7 @@ export default function Home() {
               onClick={(e) => e.stopPropagation()}
             >
               <button
+                aria-label="close-modal"
                 onClick={() => setSelectedFeature(null)}
                 className="absolute top-4 right-4 p-2 hover:bg-muted rounded-lg transition"
               >
