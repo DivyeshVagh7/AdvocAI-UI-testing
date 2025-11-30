@@ -1,3 +1,4 @@
+// frontend/src/pages/DocumentAnalyzer.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Upload,
@@ -14,7 +15,12 @@ import {
   Check,
 } from 'lucide-react';
 
-import { uploadDocument as uploadDocumentApi, getUserSessions as getUserSessionsApi, getChatHistory as getChatHistoryApi, sendChatMessage as sendChatMessageApi, } from '../utils/api';
+import {
+  uploadDocument as uploadDocumentApi,
+  getUserSessions as getUserSessionsApi,
+  getChatHistory as getChatHistoryApi,
+  sendChatMessage as sendChatMessageApi,
+} from '../utils/api';
 
 const DocumentAnalyzer = () => {
   const fileInputRef = useRef(null);
@@ -30,8 +36,7 @@ const DocumentAnalyzer = () => {
   const [loadingSessions, setLoadingSessions] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [dragActive, setDragActive] = useState(false);
-  const [isSummaryCopied, setIsSummaryCopied] = useState(false); // New state for copy status
-
+  const [isSummaryCopied, setIsSummaryCopied] = useState(false);
 
   const resetForNewDocument = () => {
     setUploadedFile(null);
@@ -39,13 +44,12 @@ const DocumentAnalyzer = () => {
     setSessionId(null);
     setChatHistory([]);
     setError('');
-
   };
 
   const handleCopySummary = () => {
-    navigator.clipboard.writeText(summary);
+    navigator.clipboard.writeText(summary || '');
     setIsSummaryCopied(true);
-    setTimeout(() => setIsSummaryCopied(false), 2000); // Reset after 2 seconds
+    setTimeout(() => setIsSummaryCopied(false), 2000);
   };
 
   const handleFileUpload = async (event) => {
@@ -60,11 +64,9 @@ const DocumentAnalyzer = () => {
     try {
       const response = await uploadDocumentApi(file);
 
-      // Accept multiple possible shapes from backend
       const receivedSummary = response?.summary ?? response?.data?.summary ?? '';
       const receivedSessionId = response?.session_id ?? response?.sessionId ?? null;
 
-      // If backend didn't provide a session id, create a client-side one so chat works
       const finalSessionId = receivedSessionId ?? `local-${Date.now()}`;
       setSessionId(finalSessionId);
 
@@ -80,7 +82,6 @@ const DocumentAnalyzer = () => {
           },
         ]);
       } else {
-        // If there's no summary but upload succeeded, show a friendly placeholder
         setSummary(response?.summary_preview ?? response?.summaryPreview ?? 'No summary available');
         setChatHistory([
           {
@@ -93,7 +94,6 @@ const DocumentAnalyzer = () => {
       }
     } catch (err) {
       console.error(err);
-      // better extraction of error text
       const message = err?.response?.data?.error || err?.message || 'Failed to upload document';
       setError(message);
       setUploadedFile(null);
@@ -104,7 +104,7 @@ const DocumentAnalyzer = () => {
 
   const handleDragOver = (event) => {
     event.preventDefault();
-    event.dataTransfer.dropEffect = 'copy';
+    try { event.dataTransfer.dropEffect = 'copy'; } catch {}
     setDragActive(true);
   };
 
@@ -123,7 +123,6 @@ const DocumentAnalyzer = () => {
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
         fileInputRef.current.files = dataTransfer.files;
-        // reuse same handler shape
         handleFileUpload({ target: { files: dataTransfer.files } });
       }
     }
@@ -162,7 +161,6 @@ const DocumentAnalyzer = () => {
       console.error(err);
       const message = err?.response?.data?.error || err?.message || 'Failed to send message';
       setError(message);
-      // remove the optimistic user message
       setChatHistory((prev) => prev.filter((m) => m.id !== newUserMessage.id));
     } finally {
       setLoading(false);
@@ -178,6 +176,7 @@ const DocumentAnalyzer = () => {
 
   useEffect(() => {
     fetchSessions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchSessions = async () => {
@@ -329,6 +328,13 @@ const DocumentAnalyzer = () => {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="max-w-7xl mx-auto p-6 lg:p-12 flex-1 flex flex-col w-full h-full">
+          {/* Error always visible when set */}
+          {error && (
+            <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-xl">
+              <p className="text-destructive text-sm">{error}</p>
+            </div>
+          )}
+
           {/* Upload / Summary header */}
           {!summary ? (
             <div className="mb-8">
@@ -342,12 +348,13 @@ const DocumentAnalyzer = () => {
                 onClick={() => !uploading && fileInputRef.current && fileInputRef.current.click()}
               >
                 <input
-                  id="file-upload"
                   ref={fileInputRef}
-                  type="file"
+                  data-testid="file-input"
                   accept=".pdf,.docx,.txt"
-                  onChange={handleFileUpload}
                   className="hidden"
+                  id="file-upload"
+                  type="file"
+                  onChange={handleFileUpload}
                   disabled={uploading}
                 />
 
@@ -394,12 +401,6 @@ const DocumentAnalyzer = () => {
                     </div>
                   )}
                 </div>
-
-                {error && (
-                  <div className="mt-4 p-4 bg-destructive/10 border border-destructive/30 rounded-xl">
-                    <p className="text-destructive text-sm">{error}</p>
-                  </div>
-                )}
               </div>
             </div>
           ) : (
@@ -414,16 +415,12 @@ const DocumentAnalyzer = () => {
               >
                 Summarize New Document
               </button>
-
             </div>
           )}
 
           {/* Analysis & Chat Grid */}
           {summary && (
             <div className="grid lg:grid-cols-5 gap-6 h-[60vh]">
-              {/* Analysis Results */}
-             
-
               {/* Chat Interface */}
               <div className="lg:col-span-3 flex flex-col h-[60vh]">
                 <div className="bg-card/40 backdrop-blur-xl rounded-2xl border border-border/50 overflow-hidden flex flex-col h-full">
@@ -494,10 +491,10 @@ const DocumentAnalyzer = () => {
                 </div>
               </div>
 
-               <div className="lg:col-span-2 flex flex-col min-h-0">
+              <div className="lg:col-span-2 flex flex-col min-h-0">
                 <div className="bg-card/40 backdrop-blur-xl rounded-2xl border border-border/50 overflow-hidden flex flex-col">
                   <div className="p-6 border-b border-border/50 bg-gradient-to-r from-primary/5 to-secondary/5 flex-shrink-0">
-                    <div className="flex items-center justify-between mb-2"> {/* Added justify-between here */}
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-gradient-to-br from-primary to-secondary rounded-lg">
                           <Bot className="w-5 h-5 text-foreground" />
