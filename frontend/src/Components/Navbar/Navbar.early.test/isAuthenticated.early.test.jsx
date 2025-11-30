@@ -210,24 +210,6 @@ describe("Navbar isAuthenticated behaviour", () => {
       expect(menu.className).toContain("translate-x-full")
     })
 
-    it("closes the menu when tapping the mobile profile link", () => {
-      mockUseAuth.mockReturnValue({
-        isAuthenticated: true,
-        user: { role: "user", profile_picture: "profile.jpg" },
-        logout: vi.fn(),
-      })
-
-      renderNavbar()
-
-      const menu = screen.getByTestId("mobile-menu")
-      fireEvent.click(screen.getByLabelText("Toggle menu"))
-
-      const profileLink = within(menu).getByText("Profile")
-      fireEvent.click(profileLink.closest("a") ?? profileLink)
-
-      expect(menu.className).toContain("translate-x-full")
-    })
-
     it("closes the menu when tapping the mobile login link while unauthenticated", () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: false,

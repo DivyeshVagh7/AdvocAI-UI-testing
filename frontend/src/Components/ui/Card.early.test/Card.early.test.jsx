@@ -8,7 +8,7 @@ import "@testing-library/jest-dom";
 
 // src/Components/ui/Card.test.jsx
 // Mocking the nested components
-// jest.mock("../Card", () => ({
+// vi.mock("../Card", () => ({
 //   Card: React.forwardRef(({ className, ...props }, ref) => (
 //     <div ref={ref} className={className} {...props} />
 //   )),

@@ -10,7 +10,7 @@ vi.mock("@/lib/utils", () => ({
 }));
 
 // Mocking nested components
-// jest.mock("../Card", () => ({
+// vi.mock("../Card", () => ({
 //   CardTitle: ({ children, ...props }) => <h3 {...props}>{children}</h3>,
 //   CardDescription: ({ children, ...props }) => <p {...props}>{children}</p>,
 //   CardContent: ({ children, ...props }) => <div {...props}>{children}</div>,

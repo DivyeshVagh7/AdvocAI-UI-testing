@@ -105,6 +105,7 @@ export default function Navbar() {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMenuOpen(true)}
+              aria-label="Toggle menu"
               className="p-3 rounded-lg hover:bg-foreground/10 transition-colors duration-200 text-muted-foreground hover:text-foreground"
             >
               <Menu size={23} />
@@ -123,6 +124,7 @@ export default function Navbar() {
 
       {/* MOBILE MENU PANEL */}
       <div
+        data-testid="mobile-menu"
         className={`md:hidden fixed top-0 right-0 bottom-0 w-3/4 max-w-sm bg-background 
         border-l border-border z-[60] flex flex-col py-6 px-6 transform transition-transform 
         duration-300 ease-in-out ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
@@ -130,6 +132,7 @@ export default function Navbar() {
         {/* Close Button */}
         <button
           onClick={() => setIsMenuOpen(false)}
+          aria-label="Close menu"
           className="absolute top-6 right-6 p-3 rounded-lg hover:bg-foreground/10 transition-colors"
         >
           <X size={26} />

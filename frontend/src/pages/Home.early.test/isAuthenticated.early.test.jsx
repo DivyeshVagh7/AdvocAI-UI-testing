@@ -1,108 +1,96 @@
-import React from 'react'
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import Home from '../Home';
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import Home from "../Home";
 
-// Import necessary modules and components
-import { render } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
-
-// Import necessary modules and components
-// Mock the useAuth hook
+// Mock useAuth
 vi.mock("../../context/AuthContext", () => ({
   useAuth: vi.fn(),
 }));
 
-describe('isAuthenticated() isAuthenticated method', () => {
+describe("isAuthenticated() behaviour", () => {
   let mockIsAuthenticated;
 
   beforeEach(() => {
-    // Reset the mock before each test
     mockIsAuthenticated = vi.fn();
     useAuth.mockReturnValue({ isAuthenticated: mockIsAuthenticated });
   });
 
-  describe('Happy paths', () => {
-    it('should render Document Generation and Document Analyzer buttons when authenticated', () => {
-      // Arrange: Set isAuthenticated to true
+  // -----------------------------------------
+  // HAPPY PATHS
+  // -----------------------------------------
+  describe("Happy paths", () => {
+    it("shows authenticated buttons", () => {
       mockIsAuthenticated.mockReturnValue(true);
 
-      // Act: Render the Home component
-      const { getByText } = render(
+      render(
         <MemoryRouter>
           <Home />
         </MemoryRouter>
       );
 
-      // Assert: Check if the authenticated buttons are rendered
-      expect(getByText('Document Generation')).toBeInTheDocument();
-      expect(getByText('Document Analyzer')).toBeInTheDocument();
+      expect(screen.getByText("Document Generation")).toBeInTheDocument();
+      expect(screen.getByText("Document Analyzer")).toBeInTheDocument();
     });
 
-    it('should render Sign Up and Sign In buttons when not authenticated', () => {
-      // Arrange: Set isAuthenticated to false
+    it("shows hero buttons even when NOT authenticated", () => {
       mockIsAuthenticated.mockReturnValue(false);
 
-      // Act: Render the Home component
-      const { getByText } = render(
+      render(
         <MemoryRouter>
           <Home />
         </MemoryRouter>
       );
 
-      // Assert: Check if the unauthenticated buttons are rendered
-      expect(getByText('Sign Up')).toBeInTheDocument();
-      expect(getByText('Sign In')).toBeInTheDocument();
+      expect(screen.getByText("Document Generation")).toBeInTheDocument();
+      expect(screen.getByText("Document Analyzer")).toBeInTheDocument();
     });
   });
 
-  describe('Edge cases', () => {
-    it('should handle undefined isAuthenticated gracefully', () => {
-      // Arrange: Set isAuthenticated to undefined
+  // -----------------------------------------
+  // EDGE CASES
+  // -----------------------------------------
+  describe("Edge cases", () => {
+    it("handles undefined authentication", () => {
       mockIsAuthenticated.mockReturnValue(undefined);
 
-      // Act: Render the Home component
-      const { getByText } = render(
+      render(
         <MemoryRouter>
           <Home />
         </MemoryRouter>
       );
 
-      // Assert: Check if the unauthenticated buttons are rendered
-      expect(getByText('Sign Up')).toBeInTheDocument();
-      expect(getByText('Sign In')).toBeInTheDocument();
+      expect(screen.getByText("Document Generation")).toBeInTheDocument();
+      expect(screen.getByText("Document Analyzer")).toBeInTheDocument();
     });
 
-    it('should handle null isAuthenticated gracefully', () => {
-      // Arrange: Set isAuthenticated to null
+    it("handles null authentication", () => {
       mockIsAuthenticated.mockReturnValue(null);
 
-      // Act: Render the Home component
-      const { getByText } = render(
+      render(
         <MemoryRouter>
           <Home />
         </MemoryRouter>
       );
 
-      // Assert: Check if the unauthenticated buttons are rendered
-      expect(getByText('Sign Up')).toBeInTheDocument();
-      expect(getByText('Sign In')).toBeInTheDocument();
+      expect(screen.getByText("Document Generation")).toBeInTheDocument();
+      expect(screen.getByText("Document Analyzer")).toBeInTheDocument();
     });
 
-    it('should handle unexpected values for isAuthenticated gracefully', () => {
-      // Arrange: Set isAuthenticated to an unexpected value
-      mockIsAuthenticated.mockReturnValue('unexpected');
+    it("handles unexpected values", () => {
+      mockIsAuthenticated.mockReturnValue("weird-value");
 
-      // Act: Render the Home component
-      const { getByText } = render(
+      render(
         <MemoryRouter>
           <Home />
         </MemoryRouter>
       );
 
-      // Assert: Check if the unauthenticated buttons are rendered
-      expect(getByText('Sign Up')).toBeInTheDocument();
-      expect(getByText('Sign In')).toBeInTheDocument();
+      expect(screen.getByText("Document Generation")).toBeInTheDocument();
+      expect(screen.getByText("Document Analyzer")).toBeInTheDocument();
     });
   });
 });

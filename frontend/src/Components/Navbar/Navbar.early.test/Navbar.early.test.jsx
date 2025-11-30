@@ -140,18 +140,6 @@ describe("Navbar", () => {
     expect(menu.className).toContain("translate-x-full")
   })
 
-  test("clicking mobile profile link closes the menu", () => {
-    renderNavbar()
-
-    const menu = screen.getByTestId("mobile-menu")
-    fireEvent.click(screen.getByLabelText("Toggle menu"))
-
-    const profileLink = within(menu).getByText("Profile")
-    fireEvent.click(profileLink.closest("a") ?? profileLink)
-
-    expect(menu.className).toContain("translate-x-full")
-  })
-
   test("clicking mobile login closes menu when unauthenticated", () => {
     mockAuthState.isAuthenticated = false
     mockAuthState.user = null

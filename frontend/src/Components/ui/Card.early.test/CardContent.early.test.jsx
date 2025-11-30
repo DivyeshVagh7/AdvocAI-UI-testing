@@ -15,7 +15,7 @@ vi.mock('@/lib/utils', () => ({
 
 
 // Mocking other components
-// jest.mock("../Card", () => ({
+// vi.mock("../Card", () => ({
 //   Card: ({ children }) => <div>{children}</div>,
 //   CardHeader: ({ children }) => <div>{children}</div>,
 //   CardFooter: ({ children }) => <div>{children}</div>,

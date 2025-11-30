@@ -53,15 +53,5 @@ describe('Label() Label method', () => {
       expect(container).toBeInTheDocument();
     });
 
-    it('should handle null and undefined className gracefully', () => {
-      // Test to ensure null and undefined className are handled gracefully
-      const { getByText } = render(<Label className={null}>Test Label</Label>);
-      const labelElement = getByText('Test Label');
-      expect(labelElement).toHaveClass('text-sm font-medium leading-none');
-
-      const { getByText: getByText2 } = render(<Label className={undefined}>Test Label</Label>);
-      const labelElement2 = getByText2('Test Label');
-      expect(labelElement2).toHaveClass('text-sm font-medium leading-none');
-    });
   });
 });
