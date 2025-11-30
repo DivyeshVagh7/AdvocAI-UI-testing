@@ -2,19 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
 import { User, LogOut, Menu, X } from "lucide-react";
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from "../../context/AuthContext";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
 
-  // Prevent background scroll when menu is open
+  // Prevent body scroll when menu open
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+    document.body.style.overflow = isMenuOpen ? "hidden" : "auto";
   }, [isMenuOpen]);
 
   const navLinks = [
@@ -30,13 +26,18 @@ export default function Navbar() {
   }
 
   if (isAuthenticated && user?.role === "lawyer") {
-    navLinks.push({ to: "/lawyer-dashboard", label: "Lawyer Dashboard", requiresAuth: true });
+    navLinks.push({
+      to: "/lawyer-dashboard",
+      label: "Lawyer Dashboard",
+      requiresAuth: true,
+    });
   }
 
   return (
-    <nav className="bg-background/80 backdrop-blur-md sticky top-0 z-50 border-b py-4 border-border shadow-lg shadow-black/20">
+    <nav className="bg-background sticky top-0 z-50 border-b py-4 border-border shadow-lg shadow-black/20">
       <div className="container mx-auto px-5 h-full">
         <div className="flex items-center justify-between h-17">
+          {/* Logo */}
           <Link
             to="/"
             className="text-3xl font-extrabold hover:text-primary transition-colors duration-200 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent"
@@ -48,7 +49,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-2">
             {navLinks.map(
               (link, index) =>
-                ((!link.requiresAuth || isAuthenticated) && (
+                (!link.requiresAuth || isAuthenticated) && (
                   <Link
                     to={link.to}
                     key={index}
@@ -57,7 +58,7 @@ export default function Navbar() {
                     {link.label}
                     <span className="absolute bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
                   </Link>
-                ))
+                )
             )}
           </div>
 
@@ -112,71 +113,64 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* DARK OVERLAY BEHIND MENU */}
+      {/* SINGLE DARK OVERLAY */}
       {isMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
           onClick={() => setIsMenuOpen(false)}
-        ></div>
+        />
       )}
 
-      {/* Mobile Menu */}
-      {/* Dark Overlay (click to close) */}
-{isMenuOpen && (
-  <div
-    className="fixed inset-0 bg-black/70 z-40 md:hidden"
-    onClick={() => setIsMenuOpen(false)}
-  ></div>
-)}
-
-{/* Fullscreen Mobile Menu */}
-<div
-  className={`md:hidden fixed inset-0 bg-background z-[60] flex flex-col py-6 px-6 transform transition-transform duration-300 ease-in-out 
-  ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
->
-  <button
-    onClick={() => setIsMenuOpen(false)}
-    className="absolute top-6 right-6 p-3 rounded-lg hover:bg-foreground/10 transition-colors"
-  >
-    <X size={26} />
-  </button>
-
-  <div className="mt-20 flex flex-col space-y-6">
-    {navLinks.map(
-      (link, index) =>
-        ((!link.requiresAuth || isAuthenticated) && (
-          <Link
-            key={index}
-            to={link.to}
-            onClick={() => setIsMenuOpen(false)}
-            className="text-3xl font-bold text-foreground hover:text-primary transition-all"
-          >
-            {link.label}
-          </Link>
-        ))
-    )}
-
-    {isAuthenticated ? (
-      <Button
-        onClick={() => {
-          logout();
-          setIsMenuOpen(false);
-        }}
-        variant="outline"
-        size="lg"
-        className="text-2xl mt-6 w-full"
+      {/* MOBILE MENU PANEL */}
+      <div
+        className={`md:hidden fixed top-0 right-0 bottom-0 w-3/4 max-w-sm bg-background 
+        border-l border-border z-[60] flex flex-col py-6 px-6 transform transition-transform 
+        duration-300 ease-in-out ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
       >
-        Logout
-      </Button>
-    ) : (
-      <Link to="/login" className="w-full" onClick={() => setIsMenuOpen(false)}>
-        <Button size="lg" className="w-full text-2xl font-bold">
-          Login
-        </Button>
-      </Link>
-    )}
-  </div>
-</div>
+        {/* Close Button */}
+        <button
+          onClick={() => setIsMenuOpen(false)}
+          className="absolute top-6 right-6 p-3 rounded-lg hover:bg-foreground/10 transition-colors"
+        >
+          <X size={26} />
+        </button>
+
+        <div className="mt-20 flex flex-col space-y-6">
+          {navLinks.map(
+            (link, index) =>
+              (!link.requiresAuth || isAuthenticated) && (
+                <Link
+                  key={index}
+                  to={link.to}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-3xl font-bold text-foreground hover:text-primary transition-all"
+                >
+                  {link.label}
+                </Link>
+              )
+          )}
+
+          {isAuthenticated ? (
+            <Button
+              onClick={() => {
+                logout();
+                setIsMenuOpen(false);
+              }}
+              variant="outline"
+              size="lg"
+              className="text-2xl mt-6 w-full"
+            >
+              Logout
+            </Button>
+          ) : (
+            <Link to="/login" className="w-full" onClick={() => setIsMenuOpen(false)}>
+              <Button size="lg" className="w-full text-2xl font-bold">
+                Login
+              </Button>
+            </Link>
+          )}
+        </div>
+      </div>
     </nav>
   );
-} 
+}
